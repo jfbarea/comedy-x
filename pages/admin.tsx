@@ -38,7 +38,7 @@ const Admin = () => {
             <ButtonGroup orientation="vertical"variant="outlined" color="default" aria-label="outlined primary button group">
                 {questions.map(({shortQuestionMessage,questionId})=> <Button key={questionId}>{shortQuestionMessage}</Button>) }
             </ButtonGroup>
-            <Typography> Pregunta en Curso {currentQuestion.shortQuestionMessage}</Typography>
+            {/* <Typography> Pregunta en Curso {currentQuestion.shortQuestionMessage}</Typography> */}
         </>
     );
 }
