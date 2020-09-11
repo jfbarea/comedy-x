@@ -24,7 +24,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function SimpleCard({shortQuestionMessage='', options=[]}) {
+export default function SimpleCard({shortQuestionMessage='', options=[], questionId=''}) {
   const classes = useStyles();
   return (
     <Card className={classes.root} variant="outlined">
@@ -33,7 +33,7 @@ export default function SimpleCard({shortQuestionMessage='', options=[]}) {
           Resultados de {shortQuestionMessage}
         </Typography>
         <List>
-          {options.map(({text, score})=> <ListItem> {text}: {score}</ListItem>)} 
+          {options.map(({text, score})=> <ListItem key={text}> {text}: {score}</ListItem>)} 
         </List>
       </CardContent>
       <CardActions>

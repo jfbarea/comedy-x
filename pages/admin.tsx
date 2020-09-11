@@ -2,33 +2,64 @@ import React, {useState, useEffect} from 'react';
 import Card from '../components/QuestionCard'
 import {Select, MenuItem, ButtonGroup, Button, Divider, Typography} from '@material-ui/core'
 
-import services from '../services'
+import settings from '../settings'
+import axios from 'axios'
 
-const {listQuestions} = services;
 
 const Admin = () => {
-    const [displayedQuestionId, setDisplayedQuestionId] = useState('');
-    const [displayedQuestion, setDisplayedQuestion] = useState({});
-    const [currentQuestion, setCurrentQuestion] = useState({});
+    const [displayedQuestion, setDisplayedQuestion] = useState({questionId: ''});
+    const [currentQuestion, setCurrentQuestion] = useState({shortQuestionMessage: '' });
     const [questions, setQuestions] = useState([]);
     const handleChange = (event: React.ChangeEvent<{ value: unknown }>) => {
         const selectedQuestionId = event.target.value as string;
         const question = questions.filter(({questionId})=> selectedQuestionId===questionId)[0]
-        setDisplayedQuestionId(selectedQuestionId);
         setDisplayedQuestion(question);
     };
+    const handleReset = () => {
+        axios({
+            method: 'post',
+            url: `${settings.BASE_URL}/question/reset`,
+            headers: {'cmdx-admin': true}
+        })
+    }
+    const handleSelect = async (questionId) => {
+        try {
+            const {data} = await axios({
+                method: 'put',
+                url: `${settings.BASE_URL}/question/select`,
+                data: {
+                    question: questionId
+                },
+                headers: {'cmdx-admin': true}
+            })
+            console.log(data)
+            setCurrentQuestion(data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
     useEffect(() => {
-        setQuestions(listQuestions())
-        setDisplayedQuestion(questions[0]);
-        setCurrentQuestion(questions.filter(({selected})=> selected)[0] || {})
-        console.log(currentQuestion)
-    })
+        const fetchQuestion = async() => {
+            try {
+                const {data} = await axios({method:'get', url: `${settings.BASE_URL}/question/all`});
+                console.log(data);
+                setQuestions(data)
+                setDisplayedQuestion(data[0]);
+                setCurrentQuestion(questions.filter(({selected})=> selected)[0] || {})
+                
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchQuestion();
+        // console.log(currentQuestion)
+    },[]);
     return (
         <>
             <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
-                value={displayedQuestionId}
+                value={displayedQuestion.questionId}
                 onChange={handleChange}
             >
                 {questions.map(({shortQuestionMessage,questionId})=> <MenuItem value={questionId}>{shortQuestionMessage}</MenuItem>) }
@@ -36,9 +67,10 @@ const Admin = () => {
             <Card {...displayedQuestion}/>
             <Divider/>
             <ButtonGroup orientation="vertical"variant="outlined" color="default" aria-label="outlined primary button group">
-                {questions.map(({shortQuestionMessage,questionId})=> <Button key={questionId}>{shortQuestionMessage}</Button>) }
+                {questions.map(({shortQuestionMessage,questionId})=> <Button onClick={()=>handleSelect(questionId)} key={questionId}>{shortQuestionMessage}</Button>) }
             </ButtonGroup>
-            {/* <Typography> Pregunta en Curso {currentQuestion.shortQuestionMessage}</Typography> */}
+            <Typography> Pregunta en Curso {currentQuestion.shortQuestionMessage}</Typography>
+            {/* <Button onClick={handleReset} variant="outlined">RESET-CAUTION</Button> */}
         </>
     );
 }
