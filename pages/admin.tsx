@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Card from '../components/QuestionCard'
-import {Select, MenuItem, ButtonGroup, Button, Divider, Typography} from '@material-ui/core'
+import {Select, MenuItem, ButtonGroup, Button, Divider, Typography, Paper, Grid} from '@material-ui/core'
 
 import settings from '../settings'
 import axios from 'axios'
@@ -56,20 +56,36 @@ const Admin = () => {
     },[]);
     return (
         <>
-            <Select
+            
+            <Card {...displayedQuestion}/>
+            <Divider/>
+            <Paper>
+              <Select
                 labelId="demo-simple-select-label"
                 id="demo-simple-select"
                 value={displayedQuestion.questionId}
                 onChange={handleChange}
-            >
+              >
                 {questions.map(({shortQuestionMessage,questionId})=> <MenuItem value={questionId}>{shortQuestionMessage}</MenuItem>) }
-            </Select>
-            <Card {...displayedQuestion}/>
-            <Divider/>
-            <ButtonGroup orientation="vertical"variant="outlined" color="default" aria-label="outlined primary button group">
-                {questions.map(({shortQuestionMessage,questionId})=> <Button onClick={()=>handleSelect(questionId)} key={questionId}>{shortQuestionMessage}</Button>) }
-            </ButtonGroup>
-            <Typography> Pregunta en Curso {currentQuestion.shortQuestionMessage}</Typography>
+              </Select>
+              <Grid container spacing={2}>
+              {
+                questions.map(({shortQuestionMessage,questionId})=> {
+                  return (
+                    <Grid item xs>
+                      <Button
+                        variant="outlined"
+                        color={shortQuestionMessage === currentQuestion.shortQuestionMessage ? 'secondary': ''}
+                        onClick={()=>handleSelect(questionId)} 
+                        key={questionId}>
+                          {shortQuestionMessage}
+                      </Button>
+                    </Grid> 
+                  );
+                })
+              }
+              </Grid>
+            </Paper>
             {/* <Button onClick={handleReset} variant="outlined">RESET-CAUTION</Button> */}
         </>
     );
