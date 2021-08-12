@@ -75,7 +75,7 @@ const Admin = () => {
                     <Grid item xs>
                       <Button
                         variant="outlined"
-                        color={shortQuestionMessage === currentQuestion.shortQuestionMessage ? 'secondary': ''}
+                        color={shortQuestionMessage === currentQuestion.shortQuestionMessage ? 'secondary': 'default'}
                         onClick={()=>handleSelect(questionId)} 
                         key={questionId}>
                           {shortQuestionMessage}
